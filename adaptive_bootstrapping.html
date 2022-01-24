@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Find Most Distinguishing Movies</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="adaptive_bootstrapping.html">Distinguishing Movies</a>
+</li>
+<li>
+  <a href="user_CF.html">User-CF</a>
+</li>
+<li>
+  <a href="https://hzhong.shinyapps.io/movierecommender/">Shinyapp</a>
+</li>
+<li>
+  <a href="mailto:&lt;hz2771@columbia.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/HaolinZhong/MovieRecommender">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/haolin-zhong-266307203/">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Find Most Distinguishing Movies</h1>
+<h3 class="subtitle">- by adaptive bootstrapping</h3>
+
+</div>
+
+
+<p> </p>
+<p>Recommend movies for new users can be knotty since we have no prior data about new users. One strategy to solve this problem is providing new users with some movies to rate on, after which recommendation can be generated based on given ratings. Then, here comes the problem: What kind of movies should be provided to new users?</p>
+<p> </p>
+<p>Intuitively, these movies should be:</p>
+<ul>
+<li><p><strong>Popular</strong>: Users can’t comment on movies they have never heard of.</p></li>
+<li><p><strong>Distinguishing</strong>: People who love the movie and who hate the movie should have varied taste.</p></li>
+</ul>
+<p> </p>
+<p>In the following analysis we will explore this topic and try to find such movies in the dataset. we chose the most popular 100 movies released after 2000 to ensure popularity of movies, and adopted the adaptive bootstrapping algorithm proposed by <a href="https://dl.acm.org/doi/10.1145/1935826.1935910">Golbandi, N., et al. 2011.</a> to find the most distinguishing movies among these movies. Our findings was further implemented in our <a href="https://hzhong.shinyapps.io/movierecommender/">shiny app</a>, which can recommend you movies based on your ratings of the movies we found here.</p>
+<p> </p>
+<div id="dependencies" class="section level3">
+<h3>Dependencies</h3>
+<pre class="r fold-show"><code>library(dplyr, warn.conflicts = FALSE)
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
+library(tidyverse)</code></pre>
+<p> </p>
+</div>
+<div id="data-preparation" class="section level1">
+<h1>Data Preparation</h1>
+<p>The data preparation process has done following things:</p>
+<ul>
+<li>extract <code>year</code> of release from the title of the movie</li>
+<li>filter on <code>year</code> to only include movies released after 2000</li>
+<li>find number of ratings of each movie, and select 100 movies with most ratings</li>
+<li>convert numerical ratings into categorical variable which has three levels, <code>lover</code>, <code>hater</code>, <code>unknown</code></li>
+</ul>
+<p> </p>
+<div id="filter-movies-released-after-2000" class="section level3">
+<h3>Filter movies released after 2000</h3>
+<pre class="r"><code>cut_year = function(string){
+  # str_split() returns a list with 1 element, 
+  # which is a vector containing splitted strings
+  year_str = str_split(string, pattern = &quot;\\(&quot;)[[1]]
+  
+  # sometimes the movie name also contains brackets,
+  # so we only take the last element in the vector,
+  # which must be the release year.
+  year_str = str_remove(year_str[length(year_str)], &quot;\\)&quot;)
+  return(year_str)
+}
+
+movies = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(
+    year = map(title, cut_year),
+    year = as.integer(year)
+  ) %&gt;% 
+  arrange(desc(year)) %&gt;% 
+  drop_na(year) %&gt;% 
+  filter(year &gt;= 2000) %&gt;% 
+  select(movie_id, year)</code></pre>
+<p>We built a function <code>cut_year</code> to extract <code>year</code> from <code>title</code>, and filtered movies released after 2000. The format of <code>title</code> is <code>[movie name] ([release year])</code>, thus we extracted <code>year</code> through identifying brackets in <code>title</code>.</p>
+<p> </p>
+</div>
+<div id="find-100-movies-with-most-ratings" class="section level3">
+<h3>Find 100 movies with most ratings</h3>
+<pre class="r"><code>rating_tidy = read_csv(&quot;./data/small/ratings.csv&quot;, col_types = &quot;iinc&quot;) %&gt;% 
+  janitor::clean_names()
+
+
+hot_movies = 
+  rating_tidy %&gt;% 
+  count(movie_id) %&gt;%
+  # right join previous tibble to filter movies released after 2000
+  right_join(movies, by = &quot;movie_id&quot;) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(100) %&gt;% 
+  arrange(movie_id) %&gt;% 
+  pull(movie_id) %&gt;% 
+  as_vector()</code></pre>
+<p>We built a data frame containing all users’ ratings on all movies, and found 100 movies with most ratings released after 2000.</p>
+<p> </p>
+</div>
+<div id="convert-rating-into-categorical-variable-type" class="section level3">
+<h3>Convert rating into categorical variable <code>type</code></h3>
+<p>The adaptive bootstrapping algorithm demands a variable suggest user’s attitude toward movies, which should have three levels: <code>lover</code>, <code>hater</code>, <code>unknown</code>. Therefore, We converted numerical ratings into this variable, <code>type</code>.</p>
+<div id="generate-the-cartesian-product-of-users-ratings-on-movies" class="section level5">
+<h5>Generate the Cartesian product of users’ ratings on movies</h5>
+<pre class="r"><code>rating_dscts = 
+  rating_tidy %&gt;% 
+  select(-timestamp) %&gt;% 
+  filter(movie_id %in% hot_movies) %&gt;% 
+  # pivot_wider will generate a matrix of user&#39;s rating towards movies, 
+  # through which NA will be introduced when the user haven&#39;t seen the movie
+  pivot_wider(names_from = movie_id, values_from = rating) %&gt;% 
+  # by using pivot_longer to transform this matrix back to tidy data,
+  # we introduced NA in the rating column, which suggest the user haven&#39;t seen the movie
+  pivot_longer(cols = as.character(hot_movies), names_to = &quot;movie_id&quot;, values_to = &quot;rating&quot;)</code></pre>
+<p>For each user, the raw rating file only includes records for movies they rated. To generate a variable which can suggest that the user haven’t seen this movie, we generated the Cartesian product of users’ ratings on movies at first.</p>
+</div>
+<div id="conversion" class="section level5">
+<h5>Conversion</h5>
+<pre class="r"><code>classify = function(rating) {
+  res = &quot;&quot;
+  # if rating is NA, then the user has not seen this movie yet.
+  if (is.na(rating)) {
+    res = &quot;unknown&quot;
+    
+  # if rating &gt; 3.5, we consider the user is a &quot;lover&quot; of this movie
+  } else if (rating &gt;= 3.5) {
+    # 
+    res = &quot;lover&quot;
+    
+  # otherwise, we consider the user the movie&#39;s hater 
+  } else {
+    res = &quot;hater&quot;
+  }
+  
+  return(res)
+}
+
+user_cate =
+  rating_dscts %&gt;%
+  mutate(type = map(rating, classify)) %&gt;% 
+  unnest(type) %&gt;% 
+  mutate(movie_id = as.numeric(movie_id))</code></pre>
+<p>The median of all ratings in the data is 3.5. Thus, if a user’s rating towards a movie is greater or equal to 3.5, we consider the user to be a “lover” of this movie, otherwise we consider the user the movie’s hater. If the rating is <code>NA</code>, then we know the user has not seen this movie and denote “unknown”.</p>
+<p> </p>
+</div>
+</div>
+</div>
+<div id="adaptive-bootstrapping" class="section level1">
+<h1>Adaptive bootstrapping</h1>
+<p>The adaptive bootstrapping algorithm will find the most “distinguishing” movie as the spliter to split users into three sub-groups, those who love it, those who dislike it and those who haven’t watched it. Then, for each sub-group, we repeat this process and split sub-groups into sub-sub groups. This recursive process will built a ternary tree whose nodes are movies, through which users will be divided into subgroups.</p>
+<p> </p>
+<div id="calculate-differentiation-score" class="section level3">
+<h3>Calculate differentiation score</h3>
+<pre class="r"><code>calc_score = function(data, id){
+  
+  # find who are lovers, who are haters, who are unknown of the given movie.
+  user_movie_type = 
+    data %&gt;% 
+    filter(movie_id == id) %&gt;% 
+    select(user_id, type)
+  
+  # calculate differentiation score
+  score = 
+    data %&gt;% 
+    # In input data, in each row, the type column represent the user&#39;s attitude 
+    # towards the movie in this row. However, what we need is the user&#39;s attitude
+    # toward the given movie. So here we remove the original type column at first
+    select(-type) %&gt;% 
+    # Then, by join, we re-introduced the type column, which now represent the 
+    # user&#39;s attitude toward the given movie.
+    left_join(user_movie_type, by = &quot;user_id&quot;) %&gt;% 
+    # the given movie should be excluded for calculating variance
+    filter(movie_id != id) %&gt;% 
+    # calculating sigma_{N+, m}, sigma_{N-, m}, sigma{\overline{N}, m}
+    group_by(type, movie_id) %&gt;% 
+    summarize(var = var(rating, na.rm = TRUE)) %&gt;% 
+    pull(var) %&gt;% 
+    # sum up to get D(M)
+    sum(na.rm = TRUE)
+  
+  return(score)
+}</code></pre>
+<p>To quantitatively describe the characteristic of “distinguishing”, the algorithm defined the distinguishing score, <span class="math inline">\(D(m)\)</span> for movie <span class="math inline">\(m\)</span>, which is the sum of subgroups’ standard deviation of ratings on other movies:</p>
+<p><span class="math display">\[D(m) = \sigma_{u \in N^{+}(m)} + \sigma_{u \in N^{-}(m)} + \sigma_{u \in \overline{N}(m)}\]</span></p>
+<ul>
+<li><span class="math inline">\(\sigma_{u \in N}\)</span>: the standard deviation of ratings on all movies users in <span class="math inline">\(N\)</span> have seen. <span class="math inline">\(\displaystyle \sigma_{u \in N} = \sum_{m} \sigma_{u \in N, m}\)</span>.</li>
+<li><span class="math inline">\(\sigma_{u \in N, m}\)</span>: the standard deviation of ratings on <span class="math inline">\(m\)</span> given by users in <span class="math inline">\(N\)</span>.</li>
+<li><span class="math inline">\(N^{+}(m)\)</span>: users who love <span class="math inline">\(m\)</span></li>
+<li><span class="math inline">\(N^{-}(m)\)</span>: users who dislike <span class="math inline">\(m\)</span></li>
+<li><span class="math inline">\(\overline{N}(m)\)</span>: users who haven’t seen <span class="math inline">\(m\)</span></li>
+</ul>
+<p>By the definition, the most distinguishing movie, i.e. the best splitter, should have the lowest <span class="math inline">\(D(m)\)</span>, because bad splitters will divide people with different taste into the same sub-group, resulting in increased <span class="math inline">\(D(m)\)</span>.</p>
+<p>We built a function <code>calc_score</code> for calculating <span class="math inline">\(D(m)\)</span> for the given movie.</p>
+<p> </p>
+</div>
+<div id="create-a-ternary-tree-class" class="section level3">
+<h3>Create a ternary tree class</h3>
+<pre class="r"><code>setClass(&quot;movieTreeNode&quot;,
+  slots = c(
+    mid = &quot;numeric&quot;,
+    sub_lover = &quot;movieTreeNode&quot;,
+    sub_unknown = &quot;movieTreeNode&quot;,
+    sub_hater = &quot;movieTreeNode&quot;
+  ) 
+)</code></pre>
+<p>Because the algorithm will generate a tree like structure, we created a ternary tree class, <code>movieTreeNode</code> to store the calculation result.</p>
+<p> </p>
+</div>
+<div id="main-function" class="section level3">
+<h3>Main function</h3>
+<pre class="r"><code># root is the root node of the ternary tree
+# levels is the depth of the tree
+
+find_movies = function(data, levels, root){
+  
+  # when level = 0, end the recursion process
+  # when nrow(data) = 0, there is no users in this subgroup, so emd recursion
+  if (levels == 0 || nrow(data) == 0) {
+    return(root)
+  }
+  
+  # list all movies
+  movies = 
+    data %&gt;% 
+    pull(movie_id) %&gt;% 
+    as_vector() %&gt;% 
+    as.integer()
+  
+  # for each movie, calculate its D(m)
+  scores = list()
+  for (i in 1:length(movies)) {
+    scores[[i]] = calc_score(data, movies[[i]])
+  }
+  
+  # find the movie with lowest D(m)
+  scores = as_vector(scores) %&gt;% as.numeric()
+  ind = which(scores == min(scores))[1]
+  movie = movies[ind]
+  
+  # give the node this movie as its value
+  root@mid = movie
+
+  # generate subgroups of lovers of this movie
+  lovers = 
+    data %&gt;%
+    filter(movie_id == movie, type == &quot;lover&quot;) %&gt;% 
+    pull(user_id) %&gt;% 
+    as.integer()
+    
+  lovers_data = 
+    data %&gt;% 
+    filter(user_id %in% lovers) %&gt;% 
+    filter(movie_id != movie)
+  
+  # generate subgroups of haters of this movie
+  haters =
+    data %&gt;%
+    filter(movie_id == movie, type == &quot;hater&quot;) %&gt;% 
+    pull(user_id) %&gt;% 
+    as.integer()
+  
+  haters_data = 
+    data %&gt;% 
+    filter(user_id %in% haters) %&gt;% 
+    filter(movie_id != movie)
+  
+  # generate subgroups of who unknown of this movie
+  unknowns = 
+    data %&gt;%
+    filter(movie_id == movie, type == &quot;unknown&quot;) %&gt;% 
+    pull(user_id) %&gt;% 
+    as.integer()
+    
+  unknowns_data =
+    data %&gt;% 
+    filter(user_id %in% unknowns) %&gt;% 
+    filter(movie_id != movie)
+  
+  # recursion, find the most differentiable movie in each subgroup
+  root@sub_lover = find_movies(lovers_data, levels - 1, new(&quot;movieTreeNode&quot;))
+  root@sub_unknown = find_movies(unknowns_data, levels - 1, new(&quot;movieTreeNode&quot;))
+  root@sub_hater = find_movies(haters_data, levels - 1, new(&quot;movieTreeNode&quot;))
+  
+  return(root)
+}</code></pre>
+<p>We implemented the algorithm in the main function <code>find_movies</code>, which will build the ternary movie tree at the given depth. Each movie node represent the most differentiable movie in the corresponding sub-group.</p>
+<p> </p>
+</div>
+<div id="read-the-tree-by-level-order-traversal" class="section level3">
+<h3>Read the tree by level-order traversal</h3>
+<pre class="r"><code>dfs = function(root, level, res){
+  
+  if (length(res) &lt; level) {
+    res[[level]] = list()
+  }
+  
+  if (identical(root@mid, numeric(0))) {
+    # increasing the readability of future traversal result
+    # by using -1 of the null node value
+    res[[level]] = append(res[[level]], -1)
+    return(res)
+  }
+  
+  res[[level]] = append(res[[level]], root@mid)
+  
+  res = dfs(root@sub_lover, level + 1, res)
+  res = dfs(root@sub_unknown, level + 1, res)
+  res = dfs(root@sub_hater, level + 1, res)
+  
+  return(res)
+}</code></pre>
+<p>After running the main function, we would get the ternary tree store differentiable movies. To read this tree, we used level order traversal, in which we set null node’s value to -1 for better readability.</p>
+<p> </p>
+</div>
+</div>
+<div id="implementation" class="section level1">
+<h1>Implementation</h1>
+<div id="test" class="section level3">
+<h3>Test</h3>
+<p>For testing, we perform the bootstrapping on 5000 rows of sampled data, generate a ternary tree with depth equals to 3, and retrieve the result to see among the 100 candidate movies which are differentiable movies.</p>
+<pre class="r"><code>set.seed(777)
+root = find_movies(sample_n(user_cate, 5000), 3, new(&quot;movieTreeNode&quot;))
+res = dfs(root, 1, list())
+
+# The last element must be a list completely made up of -1, 
+# as they represent null nodes subject to leaf nodes
+# so we directly discard it.
+res = res[1:length(res) - 1]
+
+format(res)</code></pre>
+<pre><code>## [1] &quot;3996&quot;                                             
+## [2] &quot;5349, 58559, 3994&quot;                                
+## [3] &quot;3897, 68157, -1, 44191, 4022, 48385, -1, 4226, -1&quot;</code></pre>
+<p> </p>
+</div>
+<div id="running-on-the-whole-dataset" class="section level3">
+<h3>Running on the whole dataset</h3>
+<p>We also performed the bootstrapping process on the whole dataset. Due to the large time cost, the calculation is not performed while knitting this document but in advance, and the result was recorded as showed in the following section</p>
+<pre class="r"><code>root = find_movies(user_cate, 3, new(&quot;movieTreeNode&quot;))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+
+format(res)</code></pre>
+<p> </p>
+</div>
+<div id="result" class="section level3">
+<h3>Result</h3>
+<p>The movie id sequence obtained:</p>
+<pre class="r"><code>result = list(list(7143), list(5952, 6016, 6377), list(7153, 7153, 4993, 7361, 48780, 4306, 3578, 4993, 4993))
+
+format(result)</code></pre>
+<pre><code>## [1] &quot;7143&quot;                                                 
+## [2] &quot;5952, 6016, 6377&quot;                                     
+## [3] &quot;7153, 7153, 4993, 7361, 48780, 4306, 3578, 4993, 4993&quot;</code></pre>
+<p>These movies are:</p>
+<pre class="r"><code>movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+movie_seq = 1:13
+
+movies_df = tibble(seq = movie_seq, movie_id = movies)
+
+movie_info = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  janitor::clean_names()
+
+movie_info %&gt;% 
+  filter(movie_id %in% movies) %&gt;% 
+  left_join(movies_df) %&gt;% 
+  arrange(seq) %&gt;% 
+  select(-seq) %&gt;% 
+  distinct() %&gt;% 
+  kableExtra::kbl() %&gt;% 
+  kableExtra::kable_styling(font_size = 12)</code></pre>
+<table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+movie_id
+</th>
+<th style="text-align:left;">
+title
+</th>
+<th style="text-align:left;">
+genres
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+7143
+</td>
+<td style="text-align:left;">
+Last Samurai, The (2003)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Drama|War
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5952
+</td>
+<td style="text-align:left;">
+Lord of the Rings: The Two Towers, The (2002)
+</td>
+<td style="text-align:left;">
+Adventure|Fantasy
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6016
+</td>
+<td style="text-align:left;">
+City of God (Cidade de Deus) (2002)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Crime|Drama|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6377
+</td>
+<td style="text-align:left;">
+Finding Nemo (2003)
+</td>
+<td style="text-align:left;">
+Adventure|Animation|Children|Comedy
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7153
+</td>
+<td style="text-align:left;">
+Lord of the Rings: The Return of the King, The (2003)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Drama|Fantasy
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4993
+</td>
+<td style="text-align:left;">
+Lord of the Rings: The Fellowship of the Ring, The (2001)
+</td>
+<td style="text-align:left;">
+Adventure|Fantasy
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7361
+</td>
+<td style="text-align:left;">
+Eternal Sunshine of the Spotless Mind (2004)
+</td>
+<td style="text-align:left;">
+Drama|Romance|Sci-Fi
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+48780
+</td>
+<td style="text-align:left;">
+Prestige, The (2006)
+</td>
+<td style="text-align:left;">
+Drama|Mystery|Sci-Fi|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4306
+</td>
+<td style="text-align:left;">
+Shrek (2001)
+</td>
+<td style="text-align:left;">
+Adventure|Animation|Children|Comedy|Fantasy|Romance
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3578
+</td>
+<td style="text-align:left;">
+Gladiator (2000)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Drama
+</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+</div>
+<div id="graphic-interpretation" class="section level3">
+<h3>Graphic interpretation:</h3>
+<p>According to the result, when facing new users, we can let them rate on movies we found. The logic is:</p>
+<p>For new users, let them rate on “The Last Samurai” at first. Users who give ratings above or equal to 3.5 are considered to be lovers, and those who give ratings below 3.5 are considered to be haters. Users can also reply that they haven’t watched this movie. For lovers, we then let them rate on “The Lord of the Rings: The Two Towers”, for haters we let them rate on “Finding Nemo”, and the unknown will be asked to rate on “City of God”. After rating on the second provided movie, users will then be asked to rate on the third movie which is also adaptively provided.</p>
+<p><img src="pics/recsys.png" style="width:100%"></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

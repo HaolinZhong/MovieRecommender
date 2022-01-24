@@ -1,0 +1,24 @@
+---
+title: "**Movie Recommender**"
+subtitle: "A Demo Movie Recommendation System"
+Author: Haolin Zhong
+output: 
+  html_document:
+    code_folding: null
+    toc: false
+---
+
+
+&nbsp;
+
+
+# About the project
+
+This project constructed a [demo movie recommendation system](https://hzhong.shinyapps.io/movierecommender/) through shiny app 
+upon [movielens](https://grouplens.org/datasets/movielens/latest/) dataset. To solve the cold start problem, an adaptive
+bootstrapping process was performed to find movies that best split people of different interest into subgroups to
+gain the first batch data of users. User-based collaborative filtering was implemented to recommend movies for new
+users.
+
+
+

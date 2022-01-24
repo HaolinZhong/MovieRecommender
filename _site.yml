@@ -1,0 +1,29 @@
+name: "Movie Recommender"
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "Distinguishing Movies"
+      href: adaptive_bootstrapping.html
+
+    - text: "User-CF"
+      href: user_CF.html
+          
+    - text: "Shinyapp"
+      href: https://hzhong.shinyapps.io/movierecommender/
+      
+    - icon: fa-envelope fa-lg
+      href: mailto:<hz2771@columbia.edu>
+    
+    - icon: fa-github fa-lg
+      href: https://github.com/HaolinZhong/MovieRecommender
+    
+    - icon: fa-linkedin fa-lg
+      href: https://www.linkedin.com/in/haolin-zhong-266307203/
+      
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+    theme: flatly
